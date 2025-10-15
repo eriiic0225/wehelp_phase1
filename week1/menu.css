@@ -39,14 +39,13 @@ html,body {
     width: 100%;
     background: var(--banner);
     display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .welcome {
     font-size: 40px;font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-inline: auto;
+    text-align: center;
 }
 
 .wrap {
