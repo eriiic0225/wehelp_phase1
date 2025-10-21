@@ -53,12 +53,12 @@ function textCombine(arr, arr2, str){
 
 function func1(name){
     let num = nameList.indexOf(name)
-    let distance = disCount(location[num])
-    let side = leftRight[num]
+    let distance = disCount(location[num]) //未計算跨線前的距離
+    let side = leftRight[num] //看本輪是在斜線哪一側
     let farCount = -Infinity//比較用的數字
     let nearCount = Infinity
     sameSide(side, distance) //理想中這時包含跨線的距離已經算完了，distance成為新數據
-    for (let i=0; i<distance.length; i++){
+    for (let i=0; i<distance.length; i++){ 
         if (distance[i] == 0) continue
         if (distance[i] > farCount){
             farCount = distance[i]
@@ -68,8 +68,8 @@ function func1(name){
         }
     }
     let finalText = `最遠`
-    let farIndex = moreThanOne(farCount, distance)
-    let nearIndex = moreThanOne(nearCount, distance) //記錄最近的索引
+    let farIndex = moreThanOne(farCount, distance) //記錄所有最遠的索引
+    let nearIndex = moreThanOne(nearCount, distance) //記錄所有最近的索引
     finalText = textCombine(farIndex, nameList, finalText).slice(0, -1)
     finalText += ` ; 最近`
     finalText = textCombine(nearIndex, nameList, finalText).slice(0, -1)
