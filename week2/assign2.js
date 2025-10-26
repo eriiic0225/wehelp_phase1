@@ -88,7 +88,8 @@ let occupied = {
     "S3" : [],
 }
 
-function checkTime(name, start, end){
+// 判斷時間有無衝突
+function checkTime(name, start, end){ 
     const schedule = occupied[name];
     for (let i=0; i < schedule.length; i++){
         const [min, max] = schedule[i]
@@ -110,9 +111,9 @@ function func2(ss, start, end, criteria){
         }
     }
     // console.log(factor, range, opUsed)
-    if (range === "name"){
+    if (range === "name"){ //如果條件是名字就直接給
         const name = range
-        if (checkTime(name, start, end)){
+        if (checkTime(name, start, end)){ // 判斷時段有無衝突
             occupied[name].push([start, end])
             console.log(name)
         }else{
@@ -121,7 +122,7 @@ function func2(ss, start, end, criteria){
         return
     }
 
-    range = parseFloat(range)
+    range = parseFloat(range) 
     let bestFit = null
     
     if (opUsed === ">="){
@@ -129,8 +130,8 @@ function func2(ss, start, end, criteria){
         for (let i=0; i < ss.length; i++){
             const s = ss[i]
             const val = s[factor]
-            if (val >= range && checkTime(s.name, start, end)){
-                if (val < bestVal){
+            if (val >= range && checkTime(s.name, start, end)){ //先找所有滿足條件＆有空時段的選項
+                if (val < bestVal){ //找滿足條件的最小值（最接近criteria）
                     bestVal = val
                     bestFit = s.name
                 }
@@ -142,7 +143,7 @@ function func2(ss, start, end, criteria){
             const s = ss[i]
             const val = s[factor]
             if (val <= range && checkTime(s.name, start, end)){
-                if (val > bestVal){
+                if (val > bestVal){ //找滿足條件的最大值（最接近criteria）
                     bestVal = val
                     bestFit = s.name
                 }
@@ -150,7 +151,7 @@ function func2(ss, start, end, criteria){
         }
     }
 
-    if (bestFit){
+    if (bestFit){ //如果bestFit有找到值（不是null）
         occupied[bestFit].push([start, end])
         console.log(bestFit)
     }else{
@@ -173,8 +174,9 @@ func2(services, 13, 17, "name=S1"); // Sorry
 func2(services, 8, 9, "c<=1500"); // S2
 
 // task 3
+// 規律是依序 -2 -3 +1 +2，所以每往下一輪 -2
 function func3(index){
-    const base = [25, 23, 20, 21]
+    const base = [25, 23, 20, 21] //初始的四個一組
     const startPoint = base[(index%4)]
     const result = startPoint - 2*Math.floor(index/4)
     console.log(result)
@@ -185,7 +187,7 @@ func3(10); // print 16
 func3(30); // print 6
 
 // task 4
-function checkAvailable(arr, condition){
+function checkAvailable(arr, condition){//把不能用的車廂設為0
         for (let i in arr){
             if (condition[i] === '1'){
                 arr[i] = 0
