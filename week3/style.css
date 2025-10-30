@@ -12,7 +12,9 @@
 *{
     box-sizing:border-box;
     text-decoration: none;
-    color: (var(--text));
+    color: var(--text);
+    margin: 0;
+    padding: 0;
 }
 
 html,body {
@@ -23,27 +25,49 @@ html,body {
 }
 
 .topbar {
+    position: relative; 
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 50px;
 }
 
-.navTitle{
+.nav-title{
     padding-inline: 10px;
     font-weight: 600;
 }
 
-.links a {
+.nav-menu{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
     padding-inline: 10px;
-    cursor: pointer;
-    display: inline-block;
-    transition: color 0.3s ease;
 }
 
-a:hover{
+li{
+    list-style: none;
+    direction: none;
+}
+
+a {
+    transition: color .25s ease;
+}
+
+a:hover {
     color: rgb(232, 195, 62);
 }
+
+.closeButton{
+    display: none;
+}
+
+#button {
+    display: none;
+    cursor: pointer;
+}
+
+
 
 .Banner {
     height: 250px;
@@ -144,32 +168,12 @@ img {
     z-index: 7;
 }
 
-#button{
-    display: none;
-    cursor: pointer;
-}
 
 .closeButton {
     position: absolute; top: 10px;right: 15px;
     cursor: pointer;
 }
 
-.menu {
-    display: none;
-    border-left: 2px solid #777777;
-    box-shadow: 0 0 10px;
-    position: fixed;
-    inset: 0 0 0 auto;
-    height: 100%;
-    background: var(--bg);
-    z-index: 10000;
-    width: 180px;
-    padding-top: 10px;
-}
-
-.menu a{
-    transition: color 0.3s ease;
-}
 
 .load-more{
     grid-column: 6 / span 2;
@@ -204,9 +208,6 @@ img {
     
     .card { grid-column:1 / -1; }
 
-    .links {
-        display: none;
-    }
 
     #button {
         display: block;
@@ -214,12 +215,25 @@ img {
     }
     
 
-    .menuItem{
-        text-align: center;
-        padding: 10px 0;
+    .nav-menu{
+        background-color: var(--bg);
+        position: fixed;
+        inset: 0 0 0 auto;
+        box-shadow: -16px 0 24px rgba(0, 0, 0, .2);
+        flex-direction: column;
+        width: 180px;
+        z-index: 10000;
+        justify-content: flex-start;
+        padding-top: 56px;
+        transform: translateX(100%);
     }
 
-    .menu.active {
+    .nav-menu.open{
+        transform: translateX(0%);
+        transition: transform .25s ease;
+    }
+
+    .closeButton.active{
         display: block;
     }
 

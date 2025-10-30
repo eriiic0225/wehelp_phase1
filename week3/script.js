@@ -1,20 +1,23 @@
 /* week 1 範圍 */
-// const burger = document.querySelector("#button");
-// const menu = document.querySelector(".menu");
-// const X = document.querySelector(".closeButton");
+const burger = document.querySelector("#button");
+const menu = document.querySelector(".nav-menu");
+const X = document.querySelector(".closeButton");
 
-// burger.addEventListener("click", () => {
-//     menu.classList.toggle("active");
-// })
+burger.addEventListener("click", () => {
+    menu.classList.toggle("open");
+    X.classList.toggle("active")
+})
 
-// X.addEventListener("click", () => {
-//     menu.classList.toggle("active");
-// })
+X.addEventListener("click", () => {
+    menu.classList.toggle("open");
+    X.classList.toggle("active")
+})
 
 /* week 3 範圍 */
 const informationURL = "https://cwpeng.github.io/test/assignment-3-1"
 const photoURL = "https://cwpeng.github.io/test/assignment-3-2"
 
+//抓JSON小函式
 async function fetchJSON(url){
     const response = await fetch(url)
     if (!response.ok){
@@ -23,6 +26,7 @@ async function fetchJSON(url){
     return response.json()
 }
 
+// 抓完JSON後整理
 async function init(){
     const [info, photos] = await Promise.all([
         fetchJSON(informationURL),
@@ -53,24 +57,10 @@ async function init(){
     return merge
 }
 
-const loadingData = init()
-
-document.addEventListener('DOMContentLoaded', async () => {
-    try{
-        const merged = await loadingData
-        console.log(merged)
-        //TODO: 之後在這裡跑寫好的渲染用function
-        renderPromo(merged)
-        renderCards(merged)
-    }
-    catch(error){
-        console.error(error)
-    }
-})
-
+//渲染上方promotion bar區
 function renderPromo(arr){
     const bars = document.getElementById("bars")
-
+    
     arr.slice(0,3).forEach(item => {
         const frame = document.createElement("div")
         frame.className = "promoFrame"
@@ -86,9 +76,10 @@ function renderPromo(arr){
     });
 }
 
+//渲染下方title card區
 function renderCards(arr){
     const cardBox = document.getElementById("cards")
-
+    
     arr.slice(3,13).forEach(item =>{
         const card = document.createElement("div")
         card.className = "card"
@@ -107,11 +98,11 @@ function renderCards(arr){
         card.appendChild(star)
         cardBox.appendChild(card)
     })
-
+    
 }
 
-
-let totalCount = 13
+//load more:cue額外的10個cards
+//計數器在下面，totalCount初始值設為13(前13個景點一波用掉了/總共58個)
 function loadMoreCards(arr){
     const cardBox = document.getElementById("cards")
     if (totalCount <= 52){
@@ -154,10 +145,27 @@ function loadMoreCards(arr){
             card.appendChild(star)
             cardBox.appendChild(card)
         })
-        //const btn = document.querySelector(".load-more")
+        //const loadBtn = document.querySelector(".load-more")
         loadBtn.style.display = "none"
     }
 }//end
+
+/* 程式啟動區 */
+const loadingData = init() //預先抓下promise
+let totalCount = 13 // 計數器
+
+document.addEventListener('DOMContentLoaded', async () => { //頁面載入後自動執行
+    try{
+        const merged = await loadingData // await上面的promise後才開始渲染
+        console.log(merged)
+        //TODO:在這裡跑寫好的渲染用function
+        renderPromo(merged)
+        renderCards(merged)
+    }
+    catch(error){
+        console.error(error)
+    }
+})
 
 const loadBtn = document.querySelector(".load-more")
 loadBtn.addEventListener('click', async () => {
