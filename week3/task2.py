@@ -9,9 +9,9 @@ all_topics = []
 all_likes = []
 all_times = []
 
-# 抓時間的小次函式
+#! 抓時間的小次函式
 def getTime(urls):
-    page_times = []
+    page_times = [] #用來儲存各頁所有的時間
     for article_url in urls:
         header_request = req.Request(article_url, headers={
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0"
@@ -21,13 +21,14 @@ def getTime(urls):
         
         import bs4
         soup = bs4.BeautifulSoup(raw_data, "html.parser")
-        time_box = soup.select_one('span:-soup-contains("時間") + span')
-        time = time_box.get_text(strip=True) if time_box else ""
-        page_times.append(time)
-    return page_times
+        time_box = soup.select_one('span:-soup-contains("時間") + span') #選擇「內容含有時間兩個字的<span>」的相鄰<span>(前面是bs4專屬語法，後面是css兄弟選擇器)
+        #這邊不用 string="時間"，因為這樣時間前後有空格的話就沒辦法命中
+        time = time_box.get_text(strip=True) if time_box else "" #time = 如果上面的選擇器有抓到東西，就把內含問字去掉頭尾空白，沒有抓到就當作是空字串
+        page_times.append(time) #推到函式內的儲存區
+    return page_times #return給主函式的變數儲存，之後再extended到全域儲存區
 
 
-# 主程式
+#! 主程式
 def getData(url):
     request = req.Request(url, headers={
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0"
@@ -64,10 +65,6 @@ def getData(url):
     return (nextLink["href"]) #url連結本身（nextLink的 href 屬性）#要記得接上前面的host: "https://www.ptt.cc/"
 
 pageURL = "https://www.ptt.cc/bbs/Steam/index.html"
-# getData(pageURL)
-# print(len(all_topics), all_topics)
-# print(len(all_likes), all_likes)
-# print(len(all_times), all_times)
 
 #!連續爬蟲迴圈
 count = 0
@@ -75,10 +72,12 @@ while count < 3:
     pageURL = host+getData(pageURL)
     count += 1
 
+#! 把全域儲存區的東西抓下來合併
 combine = []
 for i in range(len(all_topics)):
     combine.append((all_topics[i], all_likes[i], all_times[i]))
 
+#! 寫進 csv
 import csv
 with open("articles.csv", mode="w", newline="", encoding="utf-8-sig") as file:
     writer = csv.writer(file)

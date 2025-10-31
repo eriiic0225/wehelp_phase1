@@ -56,6 +56,27 @@ async function init(){
     //console.log(store.merge)
     return merge
 }
+//製作card區DOM的小函式
+function makeCard(item){
+    const card = document.createElement("div")
+    card.className = "card"
+    const cover = document.createElement("img")
+    cover.className = "cover"
+    cover.src = item.url
+    cover.alt = item.name
+    //cover.loading = "lazy"
+    const title = document.createElement("div")
+    title.className = "title"
+    title.textContent = item.name
+    const star = document.createElement("img")
+    star.className = "star"
+    star.src = "./img/star.png"
+    card.appendChild(cover)
+    card.appendChild(title)
+    card.appendChild(star)
+    return card //把組合好的card整個return出去給主函式用
+}
+
 
 //渲染上方promotion bar區
 function renderPromo(arr){
@@ -67,6 +88,7 @@ function renderPromo(arr){
         const promoPic = document.createElement("img")
         promoPic.className = "promoPic"
         promoPic.src = item.url
+        promoPic.alt = item.name
         const promo = document.createElement("div")
         promo.className = "promo"
         promo.textContent = item.name
@@ -81,22 +103,7 @@ function renderCards(arr){
     const cardBox = document.getElementById("cards")
     
     arr.slice(3,13).forEach(item =>{
-        const card = document.createElement("div")
-        card.className = "card"
-        const cover = document.createElement("img")
-        cover.className = "cover"
-        cover.src = item.url
-        cover.alt = "景點照片"
-        const title = document.createElement("div")
-        title.className = "title"
-        title.textContent = item.name
-        const star = document.createElement("img")
-        star.className = "star"
-        star.src = "./img/star.png"
-        card.appendChild(cover)
-        card.appendChild(title)
-        card.appendChild(star)
-        cardBox.appendChild(card)
+        cardBox.appendChild(makeCard(item))
     })
     
 }
@@ -107,43 +114,13 @@ function loadMoreCards(arr){
     const cardBox = document.getElementById("cards")
     if (totalCount <= 52){
         arr.slice(totalCount, totalCount+10).forEach(item =>{
-            const card = document.createElement("div")
-            card.className = "card"
-            const cover = document.createElement("img")
-            cover.className = "cover"
-            cover.src = item.url
-            cover.alt = "景點照片"
-            const title = document.createElement("div")
-            title.className = "title"
-            title.textContent = item.name
-            const star = document.createElement("img")
-            star.className = "star"
-            star.src = "./img/star.png"
-            card.appendChild(cover)
-            card.appendChild(title)
-            card.appendChild(star)
-            cardBox.appendChild(card)
+            cardBox.appendChild(makeCard(item))
         })
         totalCount += 10
         console.log(totalCount)
     }else{
         arr.slice(totalCount).forEach(item =>{
-            const card = document.createElement("div")
-            card.className = "card"
-            const cover = document.createElement("img")
-            cover.className = "cover"
-            cover.src = item.url
-            cover.alt = "景點照片"
-            const title = document.createElement("div")
-            title.className = "title"
-            title.textContent = item.name
-            const star = document.createElement("img")
-            star.className = "star"
-            star.src = "./img/star.png"
-            card.appendChild(cover)
-            card.appendChild(title)
-            card.appendChild(star)
-            cardBox.appendChild(card)
+            cardBox.appendChild(makeCard(item))
         })
         //const loadBtn = document.querySelector(".load-more")
         loadBtn.style.display = "none"
