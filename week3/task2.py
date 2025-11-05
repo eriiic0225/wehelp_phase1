@@ -5,6 +5,7 @@ import urllib.request as req
 
 #! 全域儲存區
 host = "https://www.ptt.cc/"
+UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0"
 all_topics = []
 all_likes = []
 all_times = []
@@ -14,7 +15,7 @@ def getTime(urls):
     page_times = [] #用來儲存各頁所有的時間
     for article_url in urls:
         header_request = req.Request(article_url, headers={
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0"
+        "User-Agent": UA
         })
         with req.urlopen(header_request) as resp:
             raw_data = resp.read().decode("utf-8")
@@ -31,7 +32,7 @@ def getTime(urls):
 #! 主程式
 def getData(url):
     request = req.Request(url, headers={
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0"
+        "User-Agent": UA
     })
     with req.urlopen(request) as response:
         data = response.read().decode("utf-8")
@@ -46,9 +47,9 @@ def getData(url):
             all_topics.append(title.a.string)
 
     #抓此頁全部讚數
-    hot = root.select("div.nrec")
+    hot = root.select("div.nrec") #找所有class=nrec的div
     for box in hot:
-        like = box.select_one("span.hl")
+        like = box.select_one("span.hl") #抓裡面的第一個span
         all_likes.append(like.get_text(strip=True) if like else "0")
 
     #先在這邊抓全部的文章連結

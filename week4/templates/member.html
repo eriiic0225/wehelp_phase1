@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <!--<link rel="stylesheet" href="{{ url_for('static', path='style.css')}}">-->
+    <title>歡迎光臨會員頁</title>
+</head>
+
+<body>
+    <div class="header">歡迎光臨，這是會員頁</div>
+    <main class="wrap layout">
+        <section class="function">
+            <div class="title">恭喜您，成功登入系統</div>
+            <div class="next"><a href="http://127.0.0.1:8000" onclick=logout()>登出系統</a></div>
+        </section>
+    </main>
+    <script>
+        async function logout(){
+            let response = await fetch("http://127.0.0.1:8000/logout",{method:"GET"})
+            let result = await response.json()
+            console.log(result)
+        }
+    </script>
+</body>
+
+</html>

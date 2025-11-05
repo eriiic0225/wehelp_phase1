@@ -23,22 +23,22 @@ async function fetchJSON(url){
     if (!response.ok){
         throw new Error('HTTP'+response.status)
     }
-    return response.json()
+    return response.json() //把抓到的資料解讀成json格式，但這邊收到的還會是promise
 }
 
-// 抓完JSON後整理
+// 抓完JSON後整理 - 因為要處理的資料還是promise，所以這邊以 async 函式操作
 async function init(){
     const [info, photos] = await Promise.all([
         fetchJSON(informationURL),
         fetchJSON(photoURL)
-    ])
+    ])//載入全部的JSON promise並await，同時利用解構分別賦值給info ＆ photo
 
     const cleanInfo = info.rows.map(({ serial, sname }) => ({ serial, name: sname }))
-    //console.log(cleanInfo)
+    //console.log(cleanInfo) >> 得到的資料格式為 [{"serial": "2011051800000061", name:"新北投溫泉區"}, {"serial":.....}]
     const regex = /^\/d_upload_ttn\/sceneadmin\/(pic|image)\/(\d{8}|.{58,60})\.jpg/
     const host = "https://www.travel.taipei"
     const cleanPhotos = photos.rows.map(({serial, pics}) => ({serial, url: host+pics.match(regex)[0]}))
-    //console.log(cleanPhotos)
+    //console.log(cleanPhotos) >> 得到的資料格式為 [{"serial": "2011051800000061", url: "...."},{.... }]
     const urlBySerial = {}
     for (const item of cleanPhotos){
         const serial = item.serial
@@ -64,6 +64,7 @@ function makeCard(item){
     cover.className = "cover"
     cover.src = item.url
     cover.alt = item.name
+    cover.title = item.name
     //cover.loading = "lazy"
     const title = document.createElement("div")
     title.className = "title"
@@ -89,6 +90,7 @@ function renderPromo(arr){
         promoPic.className = "promoPic"
         promoPic.src = item.url
         promoPic.alt = item.name
+        promoPic.title = item.name
         const promo = document.createElement("div")
         promo.className = "promo"
         promo.textContent = item.name

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <!--<link rel="stylesheet" href="{{ url_for('static', path='style.css')}}">-->
+    <title>搜尋旅館資訊</title>
+</head>
+
+<body>
+    <div class="header">您搜尋的旅館資訊如下</div>
+    <main class="wrap layout">
+        <section class="function">
+            <div class="title">{{ information }}</div>
+            <div class="next"><a href="http://127.0.0.1:8000/">返回首頁</a></div>
+        </section>
+    </main>
+    <!-- <script src="{{ url_for('static', path='script.js')}}"></script> -->
+</body>
+
+</html>
