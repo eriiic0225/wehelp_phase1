@@ -1,5 +1,5 @@
-from contextlib import asynccontextmanager
-# ↑↑↑↑ 預先載入版，使用官方推薦lifespan ↑↑↑↑
+# 初版，每次呼叫hotel時都要跑一陣子重新抓外部API的資料
+
 from typing import Annotated #限制參數避免程式報錯
 from fastapi import FastAPI, Path, Query, Body, Request
 from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
@@ -9,29 +9,12 @@ from starlette.middleware.sessions import SessionMiddleware # 使用者狀態管
 import json # 解析json回覆
 import httpx # 非同步呼叫用
 
-
-
-#------------------- 預先載入資料 --------------------
-id_list = None
-hotel_info = None
-@asynccontextmanager #lifespan - 自動於程式啟動/關閉時運行
-async def lifespan(app: FastAPI):
-    global id_list
-    global hotel_info
-    id_list, hotel_info = await grabData() #抓取資料並放入全域變數
-    print("已載入旅館資訊-連線完成")
-
-    yield
-    print("斷開連線")
-
-#------------------- 宣告 FastAPI 物件 --------------------
-app = FastAPI(lifespan=lifespan)
-#---------- 使用 SessionMiddleware，密鑰為任意字串 ----------
+app = FastAPI()
+# 使用 SessionMiddleware，密鑰為任意字串
 app.add_middleware(SessionMiddleware, secret_key="task3")
-# 告知templates的路徑
-templates = Jinja2Templates(directory="templates") 
 
-#----------------------- API本體 -------------------------
+templates = Jinja2Templates(directory="templates") #告知templates的路徑
+
 # 建立網站的首頁
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
@@ -57,11 +40,13 @@ def verify(request: Request,body=Body(None)):
 
     elif mail != "abc@abc.com" or pwd != "abc":
         return {"ok": False, "msg": "帳號或密碼輸入錯誤"}
+    
 
 @app.get("/logout")
 def logout(request: Request, body=Body(None)):
     request.session["LOGGED-IN"] = False
     return {"ok": True, "msg": "您已登出"}
+
 
 @app.get("/member", response_class=HTMLResponse)
 def member(request: Request):
@@ -75,25 +60,8 @@ def error(request: Request, msg):
     return templates.TemplateResponse("error.html",{"request": request, "msg": msg})
 
 @app.get("/hotel/{id}", response_class=HTMLResponse)
-async def search_hotel(request: Request, id:str): 
-    try:
-        id = int(id)
-        load_ids = id_list
-        load_hotels = hotel_info
-
-        if id in load_ids:
-            return templates.TemplateResponse("hotel.html",{"request": request, "information": load_hotels.get(id)})
-
-        return templates.TemplateResponse("hotel.html",{"request": request, "information": "查詢不到相關資料"})
-    except:
-        return templates.TemplateResponse("hotel.html",{"request": request, "information": "查詢不到相關資料"})
-
-# ------------------- 統一處理靜態網頁 --------------------
-# 物件名稱.mount("網頁前綴", StaticFiles(directory="資料夾名稱"),name="內部名稱")
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# 抓task4資料用的函式
-async def grabData():
+async def search_hotel(request: Request, id:int): 
+    #收到的路徑參數會是字串，要記得轉數字（FastAPI會利用類型註解自動幫我們轉換）
     cn_url = "https://resources-wehelp-taiwan-b986132eca78c0b5eeb736fc03240c2ff8b7116.gitlab.io/hotels-ch"
     eng_url = "https://resources-wehelp-taiwan-b986132eca78c0b5eeb736fc03240c2ff8b7116.gitlab.io/hotels-en"
     async with httpx.AsyncClient() as client:
@@ -106,5 +74,12 @@ async def grabData():
     cn_list = {hotel["_id"]:hotel for hotel in data_cn}
     eng_list = {eng_hotel["_id"]:eng_hotel for eng_hotel in data_eng}
     ids = cn_list.keys()
-    hotel_list = {hid:f"{cn_list[hid]['旅宿名稱']}、{eng_list[hid]['hotel name']}、{cn_list[hid]['電話或手機號碼']}" for hid in ids}
-    return (ids, hotel_list)
+    if id in ids:
+        hotel_list = {hid:f"{cn_list[hid]['旅宿名稱']}、{eng_list[hid]['hotel name']}、{cn_list[hid]['電話或手機號碼']}" for hid in ids}
+        return templates.TemplateResponse("hotel.html",{"request": request, "information": hotel_list.get(id)})
+
+    return templates.TemplateResponse("hotel.html",{"request": request, "information": "查詢不到相關資料"})
+
+# 統一處理靜態網頁
+# 物件名稱.mount("網頁前綴", StaticFiles(directory="資料夾名稱"))
+app.mount("/static", StaticFiles(directory="static"), name="static")

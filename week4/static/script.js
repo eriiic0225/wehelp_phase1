@@ -33,8 +33,8 @@ async function login() {
     }
 }
 
-const search = document.querySelector(".get-hotel")
-search.addEventListener("submit", (e)=>{
+const searchForm = document.querySelector(".get-hotel")
+searchForm.addEventListener("submit", (e)=>{
     e.preventDefault()
     const id = document.querySelector("#hid").value
     if (!isPureNumber(id)){
@@ -47,12 +47,4 @@ search.addEventListener("submit", (e)=>{
 // 判斷使用者輸入是否為正整數
 function isPureNumber(value){
     return /^\d+$/.test(value);
-}
-
-async function fetchJSON(url){
-    const response = await fetch(url)
-    if (!response.ok){
-        throw new Error('HTTP'+response.status)
-    }
-    return response.json() //把抓到的資料解讀成json格式，但這邊收到的還會是promise
 }
