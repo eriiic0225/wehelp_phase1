@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
-    <!--<link rel="stylesheet" href="{{ url_for('static', path='style.css')}}">-->
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css')}}">
     <title>歡迎光臨</title>
 </head>
 <body>
@@ -12,7 +11,7 @@
     <main class="wrap layout">
         <section class="function">
             <div class="title">登入系統</div>
-            <form class="login" novalidate>
+            <form class="login" novalidate> <!--novalidate的作用是disable表單的格式自動驗證-->
                 <div class="field">
                     <label for="email">信箱</label>
                     <input id="email" name="email" type="email">
