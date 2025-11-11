@@ -141,7 +141,7 @@ mysql> SELECT * FROM member WHERE email='test@test.com';
 
 #### 👾SELECT rows where name includes the es keyword.
 
-###### 👾<方法一> `like` %
+###### 💡<方法一> `like` %
 
 ```bash
 mysql> SELECT * FROM member WHERE name LIKE '%es%';
@@ -159,7 +159,7 @@ mysql> SELECT * FROM member WHERE name LIKE '%es%';
 
 ![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-6.1.png)
 
-###### 👾<方法二> `REGEXP` 正則表達式
+###### 💡<方法二> `REGEXP` 正則表達式
 
 ```bash
 mysql> SELECT * FROM member WHERE name REGEXP 'es';
@@ -177,7 +177,7 @@ mysql> SELECT * FROM member WHERE name REGEXP 'es';
 
 ![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-6.2.png)
 
-###### 👾<方法三> `INSTR()` 函數
+###### 💡<方法三> `INSTR()` 函數
 
 ```bash
 mysql> SELECT * FROM member WHERE INSTR(name, 'es') > 0;
