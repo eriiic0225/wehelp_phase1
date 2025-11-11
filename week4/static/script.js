@@ -14,7 +14,7 @@ async function login() {
     const email = document.querySelector("#email").value
     const pwd = document.querySelector("#pwd").value
     let response = await fetch(
-        "http://127.0.0.1:8000/login",
+        "/login",
         {
             method:"POST",
             body:JSON.stringify({
@@ -26,10 +26,10 @@ async function login() {
     let result = await response.json()
     if (result.ok){
         console.log(result)
-        window.location.assign("http://127.0.0.1:8000/member")
+        window.location.assign("/member")
     }else{
         const message = result.msg
-        window.location.assign(`http://127.0.0.1:8000/ohoh?msg=${message}`)
+        window.location.assign(`/ohoh?msg=${message}`)
     }
 }
 
@@ -41,7 +41,7 @@ searchForm.addEventListener("submit", (e)=>{
         alert("請輸入正整數")
         return
     }
-    window.location.assign(`http://127.0.0.1:8000/hotel/${id}`)
+    window.location.assign(`/hotel/${id}`)
 })
 
 // 判斷使用者輸入是否為正整數

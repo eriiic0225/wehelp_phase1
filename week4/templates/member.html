@@ -14,12 +14,12 @@
     <main class="wrap layout">
         <section class="function">
             <div class="title">恭喜您，成功登入系統</div>
-            <div class="next"><a href="http://127.0.0.1:8000" onclick=logout()>登出系統</a></div>
+            <div class="next"><a href="/" onclick=logout()>登出系統</a></div>
         </section>
     </main>
     <script>
         async function logout(){
-            let response = await fetch("http://127.0.0.1:8000/logout",{method:"GET"})
+            let response = await fetch("/logout",{method:"GET"})
             let result = await response.json()
             console.log(result)
         }
