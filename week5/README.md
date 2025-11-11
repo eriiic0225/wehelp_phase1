@@ -35,7 +35,7 @@ mysql> DESC member;
 6 rows in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task2.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task2.png)
 
 ## **Task 3: SQL CRUD**
 
@@ -61,7 +61,7 @@ mysql> INSERT INTO member (name, email, password) VALUES('test5', 'test5@test.co
 Query OK, 1 row affected (0.00 sec)
 ```
 
-![image.png](/screenshots/task3-1.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-1.png)
 
 ---
 
@@ -81,7 +81,7 @@ mysql> SELECT * FROM member;
 5 rows in set (0.01 sec)
 ```
 
-![image.png](/screenshots/task3-2.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-2.png)
 
 ---
 
@@ -101,7 +101,7 @@ mysql> SELECT * FROM member ORDER BY time DESC;
 5 rows in set (0.01 sec)
 ```
 
-![image.png](/screenshots/task3-3.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-3.png)
 
 ---
 
@@ -119,7 +119,7 @@ mysql> SELECT * FROM member ORDER BY time DESC LIMIT 3 OFFSET 1;
 3 rows in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task3-4.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-4.png)
 
 ---
 
@@ -135,7 +135,7 @@ mysql> SELECT * FROM member WHERE email='test@test.com';
 1 row in set (0.04 sec)
 ```
 
-![image.png](/screenshots/task3-5.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-5.png)
 
 ---
 
@@ -157,7 +157,7 @@ mysql> SELECT * FROM member WHERE name LIKE '%es%';
 5 rows in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task3-6.1.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-6.1.png)
 
 #### <方法二> `REGEXP` 正則表達式
 
@@ -175,7 +175,7 @@ mysql> SELECT * FROM member WHERE name REGEXP 'es';
 5 rows in set (0.01 sec)
 ```
 
-![image.png](/screenshots/task3-6.2.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-6.2.png)
 
 #### <方法三> `INSTR()` 函數
 
@@ -193,7 +193,7 @@ mysql> SELECT * FROM member WHERE INSTR(name, 'es') > 0;
 5 rows in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task3-6.3.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-6.3.png)
 
 ---
 
@@ -209,7 +209,7 @@ mysql> SELECT * FROM member WHERE email='test@test.com' AND password='test';
 1 row in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task3-7.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-7.png)
 
 ---
 
@@ -221,7 +221,7 @@ Query OK, 1 row affected (0.04 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 ```
 
-![image.png](/screenshots/task3-8.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-8.png)
 
 ## **Task 4: SQL Aggregation Functions**
 
@@ -237,7 +237,7 @@ mysql> SELECT COUNT(*) FROM member;
 1 row in set (0.04 sec)
 ```
 
-![image.png](/screenshots/task4-1.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task4-1.png)
 
 ---
 
@@ -253,7 +253,7 @@ mysql> SELECT SUM(follower_count) FROM member;
 1 row in set (0.01 sec)
 ```
 
-![image.png](/screenshots/task4-2.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task4-2.png)
 
 ---
 
@@ -269,7 +269,7 @@ mysql> SELECT AVG(follower_count) FROM member;
 1 row in set (0.01 sec)
 ```
 
-![image.png](/screenshots/task4-3.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task4-3.png)
 
 ---
 
@@ -296,7 +296,7 @@ LIMIT 2) AS TOP2_AVG;
 1 row in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task4-4.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task4-4.png)
 
 ## **Task 5: SQL JOIN**
 
@@ -326,7 +326,7 @@ mysql> DESC message;
 5 rows in set (0.02 sec)
 ```
 
-![image.png](/screenshots/task5-1.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task5-1.png)
 
 **_<填入資料內容如下>_**
 
@@ -364,7 +364,7 @@ mysql> SELECT member.name, message.content FROM member INNER JOIN message on mem
 6 rows in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task5-2.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task5-2.png)
 
 ---
 
@@ -381,7 +381,7 @@ mysql> SELECT member.name, message.content, member.email FROM member INNER JOIN 
 2 rows in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task5-3.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task5-3.png)
 
 ---
 
@@ -400,7 +400,7 @@ mysql> SELECT AVG(like_count)
 1 row in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task5-4.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task5-4.png)
 
 ---
 
@@ -422,4 +422,4 @@ mysql> SELECT member.email, AVG(like_count) AS avg_like
 5 rows in set (0.00 sec)
 ```
 
-![image.png](/screenshots/task5-5.png)
+![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task5-5.png)
