@@ -2,7 +2,7 @@
 
 ## **Task 2: Create database and table in your MySQL server**
 
-### Create a new database named website. & Create a new table named member
+#### 👾Create a new database named website. & Create a new table named member
 
 ```bash
 mysql> CREATE DATABASE website;
@@ -39,7 +39,7 @@ mysql> DESC member;
 
 ## **Task 3: SQL CRUD**
 
-### INSERT a new row to the member table where name, email and password must be set to test ,test@test.com, and test. INSERT additional 4 rows with arbitrary data.
+#### 👾INSERT a new row to the member table where name, email and password must be set to test ,test@test.com, and test. INSERT additional 4 rows with arbitrary data.
 
 ```bash
 mysql> INSERT INTO member (name, email, password) VALUES('test', 'test@test.com', 'test');
@@ -65,7 +65,7 @@ Query OK, 1 row affected (0.00 sec)
 
 ---
 
-### SELECT all rows from the member table.
+#### 👾SELECT all rows from the member table.
 
 ```bash
 mysql> SELECT * FROM member;
@@ -85,7 +85,7 @@ mysql> SELECT * FROM member;
 
 ---
 
-### SELECT all rows from the member table, in descending order of time.
+#### 👾SELECT all rows from the member table, in descending order of time.
 
 ```bash
 mysql> SELECT * FROM member ORDER BY time DESC;
@@ -105,7 +105,7 @@ mysql> SELECT * FROM member ORDER BY time DESC;
 
 ---
 
-### SELECT total 3 rows, second to fourth, from the member table, in descending order of time. Note: it does not mean SELECT rows where id are 2, 3, or 4.
+#### 👾SELECT total 3 rows, second to fourth, from the member table, in descending order of time. Note: it does not mean SELECT rows where id are 2, 3, or 4.
 
 ```bash
 mysql> SELECT * FROM member ORDER BY time DESC LIMIT 3 OFFSET 1;
@@ -123,7 +123,7 @@ mysql> SELECT * FROM member ORDER BY time DESC LIMIT 3 OFFSET 1;
 
 ---
 
-### SELECT rows where email equals to test@test.com.
+#### 👾SELECT rows where email equals to test@test.com.
 
 ```bash
 mysql> SELECT * FROM member WHERE email='test@test.com';
@@ -139,9 +139,9 @@ mysql> SELECT * FROM member WHERE email='test@test.com';
 
 ---
 
-### SELECT rows where name includes the es keyword.
+#### 👾SELECT rows where name includes the es keyword.
 
-#### <方法一> `like` %
+###### 👾<方法一> `like` %
 
 ```bash
 mysql> SELECT * FROM member WHERE name LIKE '%es%';
@@ -159,7 +159,7 @@ mysql> SELECT * FROM member WHERE name LIKE '%es%';
 
 ![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-6.1.png)
 
-#### <方法二> `REGEXP` 正則表達式
+###### 👾<方法二> `REGEXP` 正則表達式
 
 ```bash
 mysql> SELECT * FROM member WHERE name REGEXP 'es';
@@ -177,7 +177,7 @@ mysql> SELECT * FROM member WHERE name REGEXP 'es';
 
 ![image.png](https://github.com/eriiic0225/wehelp_phase1/blob/main/week5/screenshots/task3-6.2.png)
 
-#### <方法三> `INSTR()` 函數
+###### 👾<方法三> `INSTR()` 函數
 
 ```bash
 mysql> SELECT * FROM member WHERE INSTR(name, 'es') > 0;
@@ -197,7 +197,7 @@ mysql> SELECT * FROM member WHERE INSTR(name, 'es') > 0;
 
 ---
 
-### SELECT rows where email equals to test@test.com and password equals to test.
+#### 👾SELECT rows where email equals to test@test.com and password equals to test.
 
 ```bash
 mysql> SELECT * FROM member WHERE email='test@test.com' AND password='test';
@@ -213,7 +213,7 @@ mysql> SELECT * FROM member WHERE email='test@test.com' AND password='test';
 
 ---
 
-### UPDATE data in name column to test2 where email equals to test@test.com.
+#### 👾UPDATE data in name column to test2 where email equals to test@test.com.
 
 ```bash
 mysql> UPDATE member SET name='test2' WHERE email='test@test.com';
@@ -225,7 +225,7 @@ Rows matched: 1  Changed: 1  Warnings: 0
 
 ## **Task 4: SQL Aggregation Functions**
 
-### SELECT how many rows from the member table.
+#### 👾SELECT how many rows from the member table.
 
 ```bash
 mysql> SELECT COUNT(*) FROM member;
@@ -241,7 +241,7 @@ mysql> SELECT COUNT(*) FROM member;
 
 ---
 
-### SELECT the sum of follower_count of all the rows from the member table.
+#### 👾SELECT the sum of follower_count of all the rows from the member table.
 
 ```bash
 mysql> SELECT SUM(follower_count) FROM member;
@@ -257,7 +257,7 @@ mysql> SELECT SUM(follower_count) FROM member;
 
 ---
 
-### SELECT the average of follower_count of all the rows from the member table.
+#### 👾SELECT the average of follower_count of all the rows from the member table.
 
 ```bash
 mysql> SELECT AVG(follower_count) FROM member;
@@ -273,7 +273,7 @@ mysql> SELECT AVG(follower_count) FROM member;
 
 ---
 
-### SELECT the average of follower_count of the first 2 rows, in descending order of follower_count, from the member table.
+#### 👾SELECT the average of follower_count of the first 2 rows, in descending order of follower_count, from the member table.
 
 ```bash
 mysql> SELECT AVG(follower_count) FROM (SELECT follower_count FROM member ORDER BY follower_count DESC LIMIT 2) AS TOP2_AVG;
@@ -300,7 +300,7 @@ LIMIT 2) AS TOP2_AVG;
 
 ## **Task 5: SQL JOIN**
 
-### Create a new table named message , in the website database.
+#### 👾Create a new table named message , in the website database.
 
 ```bash
 mysql> CREATE TABLE message(
@@ -347,7 +347,7 @@ mysql> SELECT * FROM message;
 
 ---
 
-### SELECT all messages, including sender names. We have to JOIN the member table to get that.
+#### 👾SELECT all messages, including sender names. We have to JOIN the member table to get that.
 
 ```bash
 mysql> SELECT member.name, message.content FROM member INNER JOIN message on member.id = message.member_id;
@@ -368,7 +368,7 @@ mysql> SELECT member.name, message.content FROM member INNER JOIN message on mem
 
 ---
 
-### SELECT all messages, including sender names, where sender email equals to test@test.com . We have to JOIN the member table to filter and get that.
+#### 👾SELECT all messages, including sender names, where sender email equals to test@test.com . We have to JOIN the member table to filter and get that.
 
 ```bash
 mysql> SELECT member.name, message.content, member.email FROM member INNER JOIN message on member.id = message.member_id WHERE member.email='test@test.com';
@@ -385,7 +385,7 @@ mysql> SELECT member.name, message.content, member.email FROM member INNER JOIN 
 
 ---
 
-### Use SELECT, SQL Aggregation Functions with JOIN statement, get the average like count of messages where sender email equals to test@test.com .
+#### 👾Use SELECT, SQL Aggregation Functions with JOIN statement, get the average like count of messages where sender email equals to test@test.com .
 
 ```bash
 mysql> SELECT AVG(like_count)
@@ -404,7 +404,7 @@ mysql> SELECT AVG(like_count)
 
 ---
 
-### Use SELECT, SQL Aggregation Functions with JOIN statement, get the average like count of messages GROUP BY sender email.
+#### 👾Use SELECT, SQL Aggregation Functions with JOIN statement, get the average like count of messages GROUP BY sender email.
 
 ```bash
 mysql> SELECT member.email, AVG(like_count) AS avg_like
