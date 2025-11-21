@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css')}}">
+    <link rel="icon" href="/static/favicon-index.png">
+    <title>歡迎光臨</title>
+</head>
+<body>
+    <div class="header">歡迎光臨，請註冊登入系統</div>
+    <main class="wrap layout">
+        <!-- 註冊區 -->
+        <section class="function">
+            <div class="title">註冊帳號</div>
+            <form id="sign-up" class="sign-up">
+                <div class="field">
+                    <label for="member-name">姓名</label>
+                    <input id="member-name" name="member-name" type="text" required>
+                </div>
+                <div class="field">
+                    <label for="sign-up-email">信箱</label>
+                    <input id="sign-up-email" name="sign-up-email" type="email" required>
+                </div>
+                <div class="field">
+                    <label for="sign-up-pwd">密碼</label>
+                    <input id="sign-up-pwd" name="sign-up-password" type="password" required>
+                </div>
+                <button class="btn" type="submit">註冊</button>
+            </form>
+        </section>
+        <!-- 登入區 -->
+        <section class="function">
+            <div class="title">登入系統</div>
+            <form id="login" class="login">
+                <div class="field">
+                    <label for="email">信箱</label>
+                    <input id="email" name="email" type="email" required>
+                </div>
+                <div class="field">
+                    <label for="pwd">密碼</label>
+                    <input id="pwd" name="password" type="password" required>
+                </div>
+                <button class="btn" type="submit">登入</button>
+            </form>
+        </section>
+    </main>
+    <script src="/static/w6-script.js"></script>
+</body>
+</html>

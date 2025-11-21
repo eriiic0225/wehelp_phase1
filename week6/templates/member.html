@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <!--<link rel="stylesheet" href="{{ url_for('static', path='style.css')}}">-->
+    <link rel="icon" href="/static/favicon-member.png">
+    <title>歡迎光臨會員頁</title>
+</head>
+
+<body>
+    <div class="header">歡迎光臨，這是會員頁</div>
+    <main class="wrap layout">
+        <!-- 使用者名稱＆登出區 -->
+        <section class="function">
+            <div class="title">哈囉 <span class="user_name">{{ user_name }}</span>，歡迎登入系統！</div>
+            <div class="next"><a href="/" onclick=logout()>登出系統</a></div>
+        </section>
+        <!-- 留言表單區 -->
+        <section class="function">
+            <div class="title">快來留言吧！</div>
+            <form class="leave-message">
+                <div class="field">
+                    <label for="message">內容</label>
+                    <input id="message" name="message" type="text" required>
+                </div>
+                <button class="btn" type="submit">送出</button>
+            </form>
+        </section>
+        <!-- 留言展示區 -->
+        <section class="function">
+            <div class="comment-section">
+                {% for message in messages %}
+                <div class="message">{{ message['name'] }}：{{ message['content'] }}
+                    {% if message['member_id'] == user_id %}
+                    <button class="btn" onclick="deleteMessage({{ message['id'] }})">X</button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+    <script src="/static/script-member.js"></script>
+</body>
+
+</html>
