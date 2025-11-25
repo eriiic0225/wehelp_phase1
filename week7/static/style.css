@@ -1,0 +1,138 @@
+:root {
+    --bg: #ffffff;
+    --welcome: #223442;
+    --text: #000001;
+    --max: 1200px;
+    --font-family: 'Times New Roman', serif;
+}
+
+* {
+    box-sizing: border-box;
+    text-decoration: none;
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+}
+
+html,body {
+    margin: 0;
+    background: var(--bg);
+    font: 20px/1.7 var(--font-family)
+}
+
+.header {
+    background-color: var(--welcome);
+    font-size: 1.5rem;
+    color: #ffffff;
+    text-align: center;
+    align-content: center;
+    height: 75px;
+    margin: 0 0 40px 0;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: center;
+    /* padding-bottom: 40px; */
+}
+
+.layout > :last-child {
+    padding-bottom: 40px;
+}
+
+.function+.function {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 40px;
+    padding-top: 40px;
+}
+
+.title,.next {
+    text-align: center;
+}
+
+.user_name {
+    font-size: 1.2rem;
+}
+
+.next {
+    margin: 25px 0 0;
+}
+
+.next a{
+    text-align: center;
+    border: 1px solid #223442;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 4px;
+    transition: background .2s;
+}
+
+a:hover {
+    background: #d1d5db;
+}
+
+form {
+    display: grid;
+    width: min(360px, 100%);
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.field {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.field.checkbox {
+    grid-column: 1 / -1;
+    grid-template-columns: auto;
+    justify-content: center;
+    gap: 8px;
+}
+
+input[type="checkbox"] {
+    margin: 0 0 0 6px;
+}
+
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 4px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    background: #e5e7eb;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
+    transition: background .2s;
+
+    justify-self: center;
+}
+
+.btn:hover {
+    background: #d1d5db;
+}
+
+.comment-section {
+    display: grid;
+    width: min(360px, 100%);
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.message .btn {
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 4px;
+}
