@@ -101,7 +101,7 @@ async function login() {
             {
                 method:"POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json" //加了headers告知後端資料型態，API就會自動解析
                 },
                 body:JSON.stringify({
                     "email": loginEmail,

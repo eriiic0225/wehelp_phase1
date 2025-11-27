@@ -1,11 +1,10 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Body, Request
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi import FastAPI, Body, Request, HTTPException
+from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles # 靜態網頁資料處理
 from fastapi.templating import Jinja2Templates # Jinja2配合html進行動態選染/產生動態路徑
 from starlette.middleware.sessions import SessionMiddleware # 使用者狀態管理
 import json # 解析json回覆
-import httpx # 非同步呼叫用
 import mysql.connector # 連接資料庫
 import os
 from dotenv import load_dotenv, dotenv_values
@@ -50,14 +49,9 @@ templates = Jinja2Templates(directory="templates")
 # 建立網站的首頁
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-        },
-        status_code=200
-    )
+    return templates.TemplateResponse("index.html",{"request": request})
 
+# 註冊
 @app.post("/signup")
 def sign_up(request: Request, body=Body(None)):
     try:
@@ -103,13 +97,13 @@ def sign_up(request: Request, body=Body(None)):
         print(f"伺服器錯誤: {e}")
         return {"ok": False, "msg": "伺服器錯誤"}
 
-
+# 登入並存會員資料進 session
 @app.post("/login")
 def verify(request: Request,body=Body(None)):
-    print(f"body 的型態: {type(body)}")
-    print(f"body 的內容: {body}")
+    # print(f"body 的型態: {type(body)}")
+    # print(f"body 的內容: {body}")
     try:
-        # data = json.loads(body) //這邊是原始版本，前端沒給headers告知資料型態，需要手動解析
+        # data = json.loads(body) //這邊是原始版本，前端沒給headers告知資料型態，才需要手動解析
         data = body
         email = data.get("email", "").strip()
         pwd = data.get("password", "").strip()
@@ -138,7 +132,7 @@ def verify(request: Request,body=Body(None)):
             stored_hashed_pwd = stored_hashed_pwd.encode('utf-8')
         
         # 比較：輸入的密碼加密後，是否與資料庫中的匹配
-        is_password_correct = checkpw(pwd.encode('utf-8'), stored_hashed_pwd)
+        is_password_correct = checkpw(pwd.encode('utf-8'), stored_hashed_pwd) #結果會是「布林值」
         # =======================================
 
         if not is_password_correct:
@@ -167,129 +161,180 @@ def logout(request: Request):
     request.session["user-info"] = None
     return {"ok": True, "msg": "您已登出"}
 
-
-@app.get("/member", response_class=HTMLResponse)
+# 會員頁面
+@app.get("/member")
 def member(request: Request):
-    if request.session["user-info"] != None:
-        information = request.session["user-info"]
-
-        con = request.app.state.con
-        cursor = con.cursor(dictionary=True)
-        cursor.execute(
-            """SELECT member.name, message.member_id, message.id, content 
-            FROM member INNER JOIN message on member.id = message.member_id""")
-        messages = cursor.fetchall()
-        cursor.close() 
-
-        context = {"request": request, "user_name": information["name"], "user_id": information["user-id"], "messages": messages}
-        return templates.TemplateResponse("member.html", context)
-    else:
+    user_info = request.session.get("user-info")
+    if not user_info:
         return RedirectResponse("/")
+    
+    return FileResponse("templates/member.html")
 
-@app.get("/ohoh", response_class=HTMLResponse)
+# 失敗頁面
+@app.get("/ohoh")
 def error(request: Request, msg):
     return templates.TemplateResponse("error.html",{"request": request, "msg": msg})
 
-@app.post("/createMessage")
-def leave_message(request: Request, body=Body(None)):
+#新增 - 送使用者資料給前端
+@app.get("/api/member/current-user")
+def get_current_user(request: Request):
+    user_info = request.session.get("user-info")
+    #print(user_info) 結果： {'user-id': 17, 'name': '阿寶v2', 'email': 'fff@fff.com'}
+
+    # 如果沒有登入
+    if not user_info:
+        raise HTTPException(status_code=401, detail="未登入")
+        # ↑ 這裡拋出例外
+        # 下面的程式碼不會執行
+
+    user_id = user_info.get("user-id")
+    user_name = user_info.get("name")
+    user_email = user_info.get("email")
+
+    return {
+        "ok": True, 
+        "user-id": user_id,
+        "username": user_name, 
+        "email": user_email
+        }
+
+
+# week 7 - task 1 // 依據id查詢會員資料的 API
+@app.get("/api/member/{id}")
+def search_user(id, request: Request):
+    target_id = int(id)
+    con = request.app.state.con
+    cursor = con.cursor()
     try:
-        # ============ 第 1 步：檢查登入 ============
-        user_info = request.session.get("user-info")
-        if not user_info:
-            return {"ok": False, "msg": "請先登入"}
-        
-        user_id = user_info["user-id"]
-
-        # ============ 第 2 步：解析 JSON ============
-        try:
-            data = body
-        except json.JSONDecodeError:
-            return {"ok": False, "msg": "JSON 格式錯誤"}
-        
-        # ============ 第 3 步：驗證留言內容 ============
-        content = data.get("content", "").strip()
-
-        if not content:
-            return {"ok": False, "msg": "留言內容不能為空"}
-        
-        if len(content) > 200: # 這部分不在作業要求內，但可以作為日後參考～
-            return {"ok": False, "msg": "留言內容不能超過 200 字"}
-        
-        # ============ 第 4 步：插入資料庫 ============
-        con = request.app.state.con
-        cursor = con.cursor()
-        try:
-            cursor.execute(
-                "INSERT INTO message (member_id, content) VALUES(%s, %s)",
-                [user_id, content]
-            )
-            con.commit()
-            cursor.close()
-            
-            return {"ok": True, "msg": "留言已發布"}
-        
-        except Exception as db_error:
-            cursor.close()
-            print(f"資料庫錯誤: {db_error}")
-            return {"ok": False, "msg": "留言發布失敗"}
-    
-    except Exception as e:
-        print(f"未預期的錯誤: {e}")
-        return {"ok": False, "msg": "伺服器內部錯誤"}
-
-
-@app.post("/deleteMessage")
-def delete_message(request: Request, body=Body(None)):
-    try:
-        user_info = request.session.get("user-info")
-
-        # ============ 第 1 步：檢查是否登入 ============
-        if not user_info: #session找不到使用者的資訊 → 沒登入
-            return {"ok": False, "msg": "請先登入"}
-        # =============================================
-
-        user_id = user_info["user-id"] # 這邊先抓id後面驗證比對用
-
-        # ============ 第 2 步：解析前端傳來的資料 ============
-        data = body
-        message_id = data.get("id")
-
-        if not message_id:
-            return {"ok": False, "msg": "留言 ID 不能為空"}
-        
-        # ============ 第 3 步：驗證權限（關鍵！） ============
-        con = request.app.state.con
-        cursor = con.cursor()
-
-        # 先查詢這個留言是誰寫的
+        # 從資料庫查詢該id的用戶
         cursor.execute(
-            "SELECT member_id FROM message WHERE id=%s",
-            [message_id]
+            "SELECT name, email FROM member WHERE id=%s",[target_id]
         )
         result = cursor.fetchone()
         if not result:
-            cursor.close()
-            return {"ok": False, "msg": "留言不存在"}
+            return {"data": None}
         
-        message_owner_id = result[0]
+        # 抓取目前登入的使用者信息
+        user_info = request.session.get("user-info")
+        if not user_info:
+            return {"data": None}
         
-        # 檢查登入者是否是留言擁有者
-        if message_owner_id != user_id:
-            cursor.close()
-            return {"ok": False, "msg": "沒有權限刪除他人留言"}
+        user_id = user_info.get("user-id")
+        target_name = result[0]
+        target_email = result[1]
 
-        # ============ 第 4 步：執行刪除 ============
-        cursor.execute("DELETE FROM message WHERE id=%s", [message_id])
-        con.commit()
+        if user_id != target_id:
+            cursor.execute(
+                "INSERT INTO search_history (executor, target) VALUES(%s, %s)",
+                [user_id, target_id]
+            )
+            con.commit()
+
+        return {
+            "data":{
+                "id": target_id,
+                "name": target_name,
+                "email": target_email
+            }
+        }
+
+    except Exception as e: # 如果中途發生其他錯誤
+        print(f"伺服器錯誤: {e}") 
+        con.rollback() # 把前面commit的SQL指令回滾(取消)
+        raise HTTPException(status_code=500, detail="伺服器錯誤") 
+        # 這邊不把 str(e) 回給前端，避免洩露內部資訊（ex:資料庫設計結構)
+    
+    finally:
+        cursor.close() # 在這邊統一把游標物件關閉，避免佔用資源～
+
+# 給使用者修改名稱的API
+@app.patch("/api/member")
+def update_name(request: Request,body=Body(None)):
+    cursor = None # 先在外部宣告 這樣try/finally才都能取用
+    try:
+        new_name = body.get("name","").strip()
+        # 驗證
+        if not new_name:
+            return {"ok": False, "msg": "新名稱不能為空"}
+
+        user_info = request.session.get("user-info")
+        if not user_info:
+            return {"ok": False, "msg": "未登入"} # HTTPException(status_code=401, detail="未登入")
+
+        if new_name == user_info.get("name"):
+            return {"ok": False, "msg": "新名稱跟舊名稱相同！"}
+
+        if len(new_name) > 10:  # 加上長度限制
+            return {"ok": False, "msg": "名稱不能超過 10 個字"}
+
+        # 連線
+        con = request.app.state.con
+        cursor = con.cursor()
+
+        cursor.execute(
+            "UPDATE member SET name=%s WHERE id=%s", [new_name, user_info.get("user-id")]
+        )
+        # 確認有沒有改成功
+        if cursor.rowcount == 0: # row_count函数返回的是当前连接中最近一次操作数据库的所影响的行数
+            return {"ok": False, "msg": "使用者不存在"}
+
+        con.commit() # 有成功才鎖定 execute 的執行結果
+
+        # 一併把session內的資料更新
+        user_info["name"] = new_name
+        request.session["user-info"] = user_info
+
+        return {"ok": True, "msg": "使用者名稱修改成功"}
+    
+    except Exception as e:
+        if cursor:  # ← 只在有 cursor 時才 rollback
+            con.rollback()
+        print(f"伺服器錯誤: {e}")
+        return {"ok": False, "msg": "伺服器錯誤"}
+    
+    finally:
+        if cursor:  # 有 cursor 的話統一在 finally 關閉
+            cursor.close()
+
+# 搜尋查詢紀錄
+@app.get("/api/search_history")
+def search_history(request:Request):
+    user_info = request.session.get("user-info")
+    if not user_info:
+        raise HTTPException(status_code=401, detail="未登入")
+    user_id = user_info.get("user-id")
+    con = request.app.state.con
+    cursor = con.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            """SELECT member.name, search_history.time 
+            FROM member INNER JOIN search_history 
+            ON search_history.executor = member.id 
+            WHERE search_history.target = %s 
+            ORDER BY search_history.time DESC 
+            LIMIT 10""", [user_id])
+        history = cursor.fetchall()
+
+        # if not history:
+        #     raise HTTPException(status_code=404, detail="資料不存在")
+        
+        #print(history)
+        return {"data": history}
+    
+    except HTTPException:
+        raise
+
+    except Exception as e: 
+        print(f"伺服器錯誤: {e}") 
+        con.rollback() # 把前面commit的SQL指令回滾(取消)
+        raise HTTPException(status_code=500, detail="伺服器錯誤") 
+    
+    finally:
         cursor.close()
 
-        return {"ok": True, "msg": "留言已刪除"}
-    
-    except json.JSONDecodeError:
-        return {"ok": False, "msg": "JSON 格式錯誤"}
-    except Exception as e:
-        print(f"錯誤: {e}")
-        return {"ok": False, "msg": "伺服器錯誤"}
+
+
+
 
 
 # ------------------- 統一處理靜態網頁 --------------------

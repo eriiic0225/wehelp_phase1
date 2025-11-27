@@ -51,7 +51,7 @@ html,body {
     text-align: center;
 }
 
-.user_name {
+#user_name {
     font-size: 1.2rem;
 }
 
@@ -86,17 +86,6 @@ form {
     gap: 12px;
     margin-bottom: 8px;
 }
-.field.checkbox {
-    grid-column: 1 / -1;
-    grid-template-columns: auto;
-    justify-content: center;
-    gap: 8px;
-}
-
-input[type="checkbox"] {
-    margin: 0 0 0 6px;
-}
-
 
 input[type="text"],
 input[type="email"],
@@ -109,14 +98,13 @@ input[type="password"] {
 
 .btn {
     display: inline-block;
-    margin-top: 8px;
+    /* margin-top: 8px; */
     padding: 8px 18px;
     border-radius: 8px;
     background: #e5e7eb;
     border: 1px solid #cbd5e1;
     cursor: pointer;
     transition: background .2s;
-
     justify-self: center;
 }
 
@@ -124,15 +112,22 @@ input[type="password"] {
     background: #d1d5db;
 }
 
-.comment-section {
+/* 會員的部分顯示改成三欄grid */
+.field.member-page-function{
     display: grid;
-    width: min(360px, 100%);
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+#history-container {
+    display: grid;
+    width: min(480px, 100%);
     margin: 0 auto;
     justify-content: center;
 }
 
-.message .btn {
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-left: 4px;
+.title+.title{
+    margin: 8px 0;
 }

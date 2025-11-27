@@ -15,32 +15,40 @@
     <main class="wrap layout">
         <!-- 使用者名稱＆登出區 -->
         <section class="function">
-            <div class="title">哈囉 <span class="user_name">{{ user_name }}</span>，歡迎登入系統！</div>
+            <div class="title">哈囉 <span id="user_name">loading...</span>，歡迎登入系統！</div>
             <div class="next"><a href="/" onclick=logout();return false>登出系統</a></div>
         </section>
-        <!-- 留言表單區 -->
+        <!-- 用ID查詢會員姓名 -->
         <section class="function">
-            <div class="title">快來留言吧！</div>
-            <form class="leave-message">
-                <div class="field">
-                    <label for="message">內容</label>
-                    <input id="message" name="message" type="text" required>
+            <div class="title">查詢會員資訊</div>
+            <form id="search-member-info">
+                <div class="field member-page-function">
+                    <label for="member-id">會員ID</label>
+                    <input id="member-id" name="member-id" type="text" required>
+                    <button class="btn" type="submit">查詢</button>
                 </div>
-                <button class="btn" type="submit">送出</button>
             </form>
+            <div class="title" id="search-result"></div>
         </section>
-        <!-- 留言展示區 -->
+        <!-- 更新會員姓名 -->
         <section class="function">
-            <div class="comment-section">
-                {% for message in messages %}
-                <div class="message">{{ message['name'] }}：{{ message['content'] }}
-                    {% if message['member_id'] == user_id %}
-                    <button class="btn" onclick="deleteMessage({{ message['id'] }})">X</button>
-                    {% endif %}
+            <div class="title">更新我的名稱</div>
+            <form id="revise-name">
+                <div class="field member-page-function">
+                    <label for="new-name">新名稱</label>
+                    <input id="new-name" name="new-name" type="text" required>
+                    <button class="btn" type="submit">更新</button>
                 </div>
-                {% endfor %}
-            </div>
+            </form>
+            <div class="title" id="revised-result"></div>
         </section>
+
+        <section class="function">
+            <div class="title">誰查詢了我</div>
+            <div class="title"><button class="btn" id="refresh-history" onclick="getHistory()">更新查詢紀錄</button></div>
+            <div id="history-container"></div>
+        </section>
+
     </main>
     <script src="/static/script-member.js"></script>
 </body>
