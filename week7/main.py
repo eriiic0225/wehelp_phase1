@@ -267,7 +267,7 @@ def update_name(request: Request,data: UpdateNameRequest):
             return {"ok": False, "msg": "未登入"} # HTTPException(status_code=401, detail="未登入")
 
         if new_name == user_info.get("name"):
-            return {"ok": False, "msg": "新名稱跟舊名稱相同！"}
+            return {"error":True, "msg": "新名稱跟舊名稱相同！"}
 
         # 連線
         con = request.app.state.con
@@ -278,7 +278,7 @@ def update_name(request: Request,data: UpdateNameRequest):
         )
         # 確認有沒有改成功
         if cursor.rowcount == 0: # row_count函数返回的是当前连接中最近一次操作数据库的所影响的行数
-            return {"ok": False, "msg": "使用者不存在"}
+            return {"error":True, "msg": "使用者不存在"}
 
         con.commit() # 有成功才鎖定 execute 的執行結果
 
@@ -292,7 +292,7 @@ def update_name(request: Request,data: UpdateNameRequest):
         if cursor:  # ← 只在有 cursor 時才 rollback
             con.rollback()
         print(f"伺服器錯誤: {e}")
-        return {"ok": False, "msg": "伺服器錯誤"}
+        return {"error":True, "msg": "伺服器錯誤"}
     
     finally:
         if cursor:  # 有 cursor 的話統一在 finally 關閉

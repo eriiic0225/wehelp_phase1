@@ -109,10 +109,10 @@ async function reviseUserName(){
     try {
         const newName = document.querySelector("#new-name").value.trim()
         // 基本格式檢查（未來可以自己新增更多檢查條件）
-        // if (newName.length > 10){
-        //     alert("使用者名稱不能超過10個字元")
-        //     return
-        // }
+        if (newName.length > 10){
+            alert("使用者名稱不能超過10個字元")
+            return
+        }
 
         if (!confirm(`確認要更新名稱為 ${newName} 嗎？`)) {
             return
@@ -124,7 +124,9 @@ async function reviseUserName(){
             body: JSON.stringify({"name": newName})
         })
 
+        const revisedResult = document.querySelector("#revised-result")
         if (!response.ok){
+            revisedResult.textContent = "操作失敗QQ，名稱未更新"
             throw new Error(`伺服器錯誤: ${response.status}`)
         }
         let result
@@ -134,7 +136,6 @@ async function reviseUserName(){
             throw new Error("伺服器返回了無效的 JSON")
         }
 
-        const revisedResult = document.querySelector("#revised-result")
         if (result.ok){
             document.querySelector("#new-name").value = ""
             revisedResult.textContent = "更新成功！"
