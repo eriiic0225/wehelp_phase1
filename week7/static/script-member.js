@@ -1,3 +1,7 @@
+// document.addEventListener("DOMContentLoaded", () => {
+//     getUserName()
+// })
+
 const searchMemberInfo = document.querySelector("#search-member-info")
 searchMemberInfo.addEventListener("submit",(e)=>{
     e.preventDefault()
@@ -39,7 +43,7 @@ async function logout(){
         // ============ 第 4 步：處理結果 ============
         if (result.ok) {
             alert(result.msg || "已登出")
-            window.location.assign("/")  // 返回首頁
+            window.location.href = "/"  // 返回首頁
         } else {
             alert(result.msg || "登出失敗")
         }
@@ -61,7 +65,7 @@ async function getUserName() {
         let result
         try{
             result = await response.json()
-            console.log(result)
+            //僅在開發時確認用 console.log(result)
         } catch(e) {
             throw new Error("伺服器返回了無效的 JSON")
         }

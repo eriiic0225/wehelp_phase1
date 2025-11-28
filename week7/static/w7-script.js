@@ -10,31 +10,6 @@ signUpForm.addEventListener("submit", (e)=>{
     signUp()
 })
 
-async function getUserName() {
-    try {
-        const userName = document.querySelector("#user_name")
-        const response = fetch("/api/member/current-user",{method: "GET",})
-        if (!response.ok){
-            throw new Error (`伺服器錯誤: ${response.status}`)
-        }
-        let result
-        try{
-            result = await response.json()
-            console.log(result)
-        } catch(e) {
-            throw new Error("伺服器返回了無效的 JSON")
-        }
-        if (result.ok){
-            userName.textContent = result.username
-        }
-    }catch(error){
-        console.error("找不到用戶名稱:", error)
-    }
-}
-getUserName()
-
-
-
 async function signUp() {
     try{
         // ============ 第 1 步：驗證輸入 ============

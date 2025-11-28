@@ -9,6 +9,7 @@ import mysql.connector # 連接資料庫
 import os
 from dotenv import load_dotenv, dotenv_values
 from bcrypt import hashpw, gensalt, checkpw # 用來將密碼加密儲存
+from pydantic import BaseModel, Field, EmailStr # 自動輸入驗證與型別轉換
 
 #------------------- 取得環境變數內的敏感資料 --------------------
 load_dotenv()
@@ -52,18 +53,18 @@ def home(request: Request):
     return templates.TemplateResponse("index.html",{"request": request})
 
 # 註冊
-@app.post("/signup")
-def sign_up(request: Request, body=Body(None)):
-    try:
-        # data = json.loads(body) //這邊是原始版本，前端沒給headers告知資料型態，需要手動解析
-        data = body
-        name = data.get("name", "").strip() #去除空字串，並在get method預設空字串為取不到資料的返回值
-        mail = data.get("email", "").strip()
-        pwd = data.get("password", "").strip()
+class SignUpData(BaseModel):
+    name: str = Field(..., min_length=1, max_length=10)
+    email: EmailStr  # 自動驗證郵箱格式
+    password: str
 
-        #檢查是否為空
-        if not all([name, mail, pwd]):
-            return {"ok": False, "msg": "欄位不能為空"}
+@app.post("/signup")
+def sign_up(request: Request, data:SignUpData):
+    cursor = None
+    try:
+        name = data.name.strip()
+        mail = data.email.strip()
+        pwd = data.password.strip()
         
         con = request.app.state.con #取得資料庫連線物件
         cursor = con.cursor() # 建立游標物件
@@ -87,44 +88,46 @@ def sign_up(request: Request, body=Body(None)):
             [name, mail, hashed_pwd]  # ← 存的是加密後的
         )
         con.commit()
-        cursor.close() # 關閉游標物件避免佔用伺服器資源
 
         return {"ok": True, "msg": "註冊成功"}
     
-    except json.JSONDecodeError:
-        return {"ok": False, "msg": "JSON 格式錯誤"}
     except Exception as e:
+        if cursor:  # ✓ 只在有 cursor 時才 rollback
+            con.rollback()
         print(f"伺服器錯誤: {e}")
         return {"ok": False, "msg": "伺服器錯誤"}
+    finally:
+        if cursor: # ✓ 檢查 cursor 是否存在
+            cursor.close() # 統一關閉游標物件避免佔用伺服器資源
 
 # 登入並存會員資料進 session
-@app.post("/login")
-def verify(request: Request,body=Body(None)):
-    # print(f"body 的型態: {type(body)}")
-    # print(f"body 的內容: {body}")
-    try:
-        # data = json.loads(body) //這邊是原始版本，前端沒給headers告知資料型態，才需要手動解析
-        data = body
-        email = data.get("email", "").strip()
-        pwd = data.get("password", "").strip()
+class LoginData(BaseModel):
+    email: EmailStr
+    password: str
 
-        if not email or not pwd: # 如果沒有email或密碼
-            return {"ok": False, "msg": "電子郵件或密碼不能為空"}
+@app.post("/login")
+def verify(request: Request, data: LoginData):
+    cursor = None
+    try:
+        email = data.email.strip()
+        pwd = data.password.strip()
         
         con = request.app.state.con
-        cursor = con.cursor()
+        cursor = con.cursor(dictionary=True)
 
         # 從資料庫查詢該電子郵件的用戶
         cursor.execute(
             "SELECT id, name, password FROM member WHERE email=%s",[email]
         )
-        result = cursor.fetchone()
+        result = cursor.fetchone() 
+        # result = {'id': 17, 'name': '阿寶v2', 'password': '加密後的密碼'})
 
         if not result:
-            cursor.close() 
             return {"ok": False, "msg": "電子郵件或密碼不正確"}
-        
-        user_id, user_name, stored_hashed_pwd = result
+
+        user_id = result['id']
+        user_name = result['name']
+        stored_hashed_pwd = result['password']
 
         # ============ 新增：密碼驗證 ============# 把從資料庫取出的加密密碼轉回 bytes
         # 檢查 stored_hashed_pwd 是否是字符串
@@ -136,7 +139,6 @@ def verify(request: Request,body=Body(None)):
         # =======================================
 
         if not is_password_correct:
-            cursor.close() 
             return {"ok": False, "msg": "電子郵件或密碼不正確"}
 
         # 密碼正確，設定 session
@@ -146,14 +148,16 @@ def verify(request: Request,body=Body(None)):
             "email": email
         }
         
-        cursor.close()
         return {"ok": True, "msg": "登入成功"}
 
-    except json.JSONDecodeError:
-        return {"ok": False, "msg": "JSON 格式錯誤"}
     except Exception as e:
+        if cursor:
+            con.rollback()  # 保持一致風格（不加也完全可以...）
         print(f"伺服器錯誤: {e}")
         return {"ok": False, "msg": "伺服器錯誤"}
+    finally:
+        if cursor:
+            cursor.close()
 
 
 @app.get("/logout")
@@ -248,24 +252,22 @@ def search_user(id, request: Request):
         cursor.close() # 在這邊統一把游標物件關閉，避免佔用資源～
 
 # 給使用者修改名稱的API
+class UpdateNameRequest(BaseModel):
+    name: str = Field(...,min_length=1, max_length=10) #必傳，最小長度 1，最大長度 10
+
 @app.patch("/api/member")
-def update_name(request: Request,body=Body(None)):
+def update_name(request: Request,data: UpdateNameRequest):
     cursor = None # 先在外部宣告 這樣try/finally才都能取用
     try:
-        new_name = body.get("name","").strip()
-        # 驗證
-        if not new_name:
-            return {"ok": False, "msg": "新名稱不能為空"}
+        new_name = data.name.strip()
 
+        # 驗證
         user_info = request.session.get("user-info")
         if not user_info:
             return {"ok": False, "msg": "未登入"} # HTTPException(status_code=401, detail="未登入")
 
         if new_name == user_info.get("name"):
             return {"ok": False, "msg": "新名稱跟舊名稱相同！"}
-
-        if len(new_name) > 10:  # 加上長度限制
-            return {"ok": False, "msg": "名稱不能超過 10 個字"}
 
         # 連線
         con = request.app.state.con
@@ -331,10 +333,6 @@ def search_history(request:Request):
     
     finally:
         cursor.close()
-
-
-
-
 
 
 # ------------------- 統一處理靜態網頁 --------------------
